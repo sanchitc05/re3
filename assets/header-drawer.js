@@ -18,12 +18,16 @@ class HeaderDrawer extends Component {
     super.connectedCallback();
 
     this.addEventListener('keyup', this.#onKeyUp);
+    this.refs.details.addEventListener('toggle', this.#syncHeaderMenuOpenState);
     this.#setupAnimatedElementListeners();
+    this.#syncHeaderMenuOpenState();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('keyup', this.#onKeyUp);
+    this.refs.details.removeEventListener('toggle', this.#syncHeaderMenuOpenState);
+    this.#setHeaderMenuOpen(false);
   }
 
   /**
@@ -42,6 +46,25 @@ class HeaderDrawer extends Component {
   get isOpen() {
     return this.refs.details.hasAttribute('open');
   }
+
+  /**
+   * @returns {HTMLElement | null} The header component that owns this drawer.
+   */
+  get headerComponent() {
+    return this.closest('header-component');
+  }
+
+  /**
+   * Force the transparent header into its readable state while the main drawer is open.
+   * @param {boolean} isOpen
+   */
+  #setHeaderMenuOpen(isOpen) {
+    this.headerComponent?.classList.toggle('header--menu-open', isOpen);
+  }
+
+  #syncHeaderMenuOpenState = () => {
+    this.#setHeaderMenuOpen(this.isOpen);
+  };
 
   /**
    * Get the closest details element to the event target
@@ -75,6 +98,10 @@ class HeaderDrawer extends Component {
     summary.setAttribute('aria-expanded', 'true');
 
     this.preventInitialAccordionAnimations(details);
+    if (details === this.refs.details) {
+      this.#setHeaderMenuOpen(true);
+    }
+
     requestAnimationFrame(() => {
       details.classList.add('menu-open');
 
@@ -116,6 +143,9 @@ class HeaderDrawer extends Component {
     summary.setAttribute('aria-expanded', 'false');
     details.classList.remove('menu-open');
     this.refs.menuDrawer.classList.remove('menu-drawer--has-submenu-opened');
+    if (details === this.refs.details) {
+      this.#setHeaderMenuOpen(false);
+    }
 
     // Wait for the .menu-drawer element's transition, not the entire details subtree
     // This avoids waiting for child accordion/resource-card animations which can cause issues on Firefox

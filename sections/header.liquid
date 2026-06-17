@@ -544,6 +544,21 @@
     --closed-underlay-height: 0px;
   }
 
+  .header.header--menu-open {
+    --scroll-progress: 1 !important;
+    --color-progress: 1 !important;
+    --header-background-opacity: 1 !important;
+    --header-background-blur: 10px !important;
+    --closed-underlay-height: 100% !important;
+
+    opacity: 1 !important;
+  }
+
+  .header.header--menu-open :is(.header__underlay-closed, .header__underlay-open) {
+    opacity: 1 !important;
+    visibility: visible;
+  }
+
   #header-component :is(.header-menu, .dropdown-localization) {
     display: none;
   }

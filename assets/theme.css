@@ -1,4 +1,4 @@
-/* Prevent page-level horizontal scroll from decorative bleed or carousels */
+ide /* Prevent page-level horizontal scroll from decorative bleed or carousels */
 html {
   overflow-x: clip;
 }
